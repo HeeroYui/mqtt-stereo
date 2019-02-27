@@ -3,16 +3,19 @@ package main
 import (
 	"fmt"
 	"os"
+	"log"
 
 	"github.com/urfave/cli"
 
-	"github.com/redbeardlab/mqtt-stereo/backend"
+	//"github.com/redbeardlab/mqtt-stereo/backend"
+	"./backend"
 )
 
 func main() {
 	app := cli.NewApp()
 	app.Name = "mqtt-player"
-
+	log.Print("Start application")
+	log.SetOutput(os.Stderr)
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
 			Name:  "record",
@@ -34,6 +37,16 @@ func main() {
 			Usage: "What port to use to connect to the broker",
 			Value: 1883,
 		},
+		cli.StringFlag{
+			Name:  "user",
+			Usage: "User name of the client",
+			Value: "",
+		},
+		cli.StringFlag{
+			Name:  "password",
+			Usage: "User password of the client",
+			Value: "",
+		},
 	}
 
 	app.Commands = []cli.Command{
@@ -42,8 +55,14 @@ func main() {
 			Aliases: []string{"r", "rec"},
 			Usage:   "Record traffic from a MQTT broker",
 			Action: func(c *cli.Context) error {
-				fmt.Println(c.GlobalString("url"))
+				log.Print("REQUEST RECORD : ...")
+				log.Print("    url=" + c.GlobalString("url"))
+				log.Print("    port=" + c.GlobalString("port"))
+				log.Print("    user=" + c.GlobalString("user"))
+				log.Print("    password=" + c.GlobalString("password"))
+				log.Print("    topic=" + c.GlobalString("topic"))
 				backend.StartRecording(c)
+				log.Print("DONE RECORD : ...")
 				return nil
 			},
 		},

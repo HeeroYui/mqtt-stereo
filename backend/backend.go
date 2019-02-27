@@ -59,15 +59,23 @@ func newRecoder(r *os.File, exitSignalCh chan os.Signal) chan MQTT.Message {
 }
 
 func StartRecording(c *cli.Context) {
+	log.SetOutput(os.Stderr)
+	log.Print("START RECORDING")
 	url := createUrl(c.GlobalString("url"), c.GlobalInt("port"))
+	log.Print("   url=" + url)
 	file, err := os.Create(c.GlobalString("record"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	topic := c.GlobalString("topic")
+	log.Print("   topic=" + topic)
 
 	opts := MQTT.NewClientOptions()
 	opts.AddBroker(url)
+	log.Print("   user=" + c.GlobalString("user"))
+	log.Print("   password=" + c.GlobalString("password"))
+	opts.SetUsername(c.GlobalString("user"))
+	opts.SetPassword(c.GlobalString("password"))
 
 	receiver := MQTT.NewClient(opts)
 	if token := receiver.Connect(); token.Wait() && token.Error() != nil {
